@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "Radiant Wallet",
+  "version": "1.0.0",
+  "description": "Non-custodial Radix DLT wallet. Swap, stake, and manage assets.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_title": "Radiant Wallet"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/inject.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://mainnet.radixdlt.com/*",
+    "https://babylon-gateway.radixdlt.com/*",
+    "https://api.ociswap.com/*",
+    "https://*.radixdlt.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["content/provider.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
