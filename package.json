@@ -12,6 +12,10 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@radixdlt/radix-engine-toolkit": "^1.0.6",
+    "@scure/bip32": "^2.2.0",
+    "bip39": "^3.1.0",
+    "crypto-js": "^4.2.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.15.0",
