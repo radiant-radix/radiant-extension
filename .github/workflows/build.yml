@@ -23,11 +23,20 @@ jobs:
       - name: Build extension
         run: npm run build
 
+      - name: Copy manifest and icons to dist
+        run: |
+          cp manifest.json dist/
+          mkdir -p dist/icons
+          cp -r public/icons/* dist/icons/
+          ls -la dist/
+
       - name: Create ZIP
         run: |
           cd dist
           zip -r ../radiant-wallet-extension.zip .
           cd ..
+          echo "ZIP contents:"
+          unzip -l radiant-wallet-extension.zip | head -20
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
