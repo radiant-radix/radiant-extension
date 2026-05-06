@@ -16,17 +16,22 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, 'src/popup/index.html'),
-        background: resolve(__dirname, 'src/background/service-worker.js'),
-        content: resolve(__dirname, 'src/content/inject.js'),
+        'service-worker': resolve(__dirname, 'src/background/service-worker.js'),
+        inject: resolve(__dirname, 'src/content/inject.js'),
       },
       output: {
-        entryFileNames: '[name]/[name].js',
-        chunkFileNames: 'chunks/[name].js',
-        assetFileNames: 'assets/[name].[ext]',
+        entryFileNames: (chunkInfo) => {
+          if (chunkInfo.name === 'service-worker') return 'background/service-worker.js'
+          if (chunkInfo.name === 'inject') return 'content/inject.js'
+          return '[name]/[name].js'
+        },
+        chunkFileNames: 'chunks/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
     chunkSizeWarningLimit: 10000,
   },
+  publicDir: 'public',
   resolve: {
     alias: { '@': resolve(__dirname, 'src') },
   },

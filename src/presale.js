@@ -62,13 +62,11 @@ export async function getOnChainStats(network = 'mainnet') {
     const data = await res.json()
     const fungibles = data?.items?.[0]?.fungible_resources?.items || []
 
-    const XRD = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
-    const xrdItem = fungibles.find(f => f.resource_address === XRD)
-    const xrdRaised = parseFloat(xrdItem?.amount || xrdItem?.vaults?.items?.[0]?.amount || 0)
-
-    // Hitung rdtSold dari xrdRaised
-    const rdtSold = xrdRaised / PRESALE_CONFIG.priceXrdPerRdt
-    const rdtRemaining = PRESALE_CONFIG.totalRdtForSale - rdtSold
+    // Track from RDT remaining in treasury — accurate regardless of XRD withdrawals
+    const rdtItem = fungibles.find(f => f.resource_address === PRESALE_CONFIG.rdtAddress)
+    const rdtRemaining = parseFloat(rdtItem?.amount || rdtItem?.vaults?.items?.[0]?.amount || PRESALE_CONFIG.totalRdtForSale)
+    const rdtSold = PRESALE_CONFIG.totalRdtForSale - rdtRemaining
+    const xrdRaised = rdtSold * PRESALE_CONFIG.priceXrdPerRdt
     const pct = (rdtSold / PRESALE_CONFIG.totalRdtForSale) * 100
 
     return {
@@ -77,7 +75,7 @@ export async function getOnChainStats(network = 'mainnet') {
       rdtSold,
       pct: Math.min(pct, 100),
       hardCapXrd: PRESALE_CONFIG.hardCapXrd,
-      isSoldOut: rdtSold >= PRESALE_CONFIG.totalRdtForSale,
+      isSoldOut: rdtRemaining <= 0,
     }
   } catch { return null }
 }

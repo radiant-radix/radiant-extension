@@ -11,7 +11,11 @@
   },
   "action": {
     "default_popup": "popup/index.html",
-    "default_title": "Radiant Wallet"
+    "default_title": "Radiant Wallet",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
   "background": {
     "service_worker": "background/service-worker.js",
@@ -31,14 +35,15 @@
     "notifications"
   ],
   "host_permissions": [
-    "https://mainnet.radixdlt.com/*",
-    "https://babylon-gateway.radixdlt.com/*",
+    "https://*.radixdlt.com/*",
     "https://api.ociswap.com/*",
-    "https://*.radixdlt.com/*"
+    "https://api.astrolescent.com/*",
+    "https://mainnet.radixdlt.com/*",
+    "https://babylon-gateway.radixdlt.com/*"
   ],
   "web_accessible_resources": [
     {
-      "resources": ["content/provider.js"],
+      "resources": ["icons/*", "assets/*"],
       "matches": ["<all_urls>"]
     }
   ]

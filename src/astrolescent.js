@@ -1,52 +1,55 @@
-// Astrolescent API integration
-// Get API key from: https://astrl.trade (contact them)
-const ASTRL_API_KEY = import.meta.env.VITE_ASTRL_API_KEY || ''
-const ASTRL_BASE = 'https://api.astrolescent.com'
+const ASTRL_API = `https://api.astrolescent.com/partner/${import.meta.env.VITE_ASTRL_API_KEY}`
+const XRD = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
+
+// Fee config — update feeComponent once received from Timan
+const FEE_COMPONENT = 'component_rdx1crselk8yucgt8ghkv5mh9gkzphcdmdqggrz8kslmwresx0knnu0y5a'
+const FEE_PERCENT = 0.01   // 1%
 
 let tokenCache = null
+let tokenCacheTime = 0
 let priceCache = null
-let cacheTime = 0
-const CACHE_TTL = 10 * 60 * 1000 // 10 min
+let priceCacheTime = 0
+const TTL = 10 * 60 * 1000
 
 export async function getAstrlTokens() {
-  if (tokenCache && Date.now() - cacheTime < CACHE_TTL) return tokenCache
+  if (tokenCache && Date.now() - tokenCacheTime < TTL) return tokenCache
   try {
-    if (!ASTRL_API_KEY) return []
-    const res = await fetch(`${ASTRL_BASE}/partner/${ASTRL_API_KEY}/tokens`)
-    if (!res.ok) return []
-    tokenCache = await res.json()
-    cacheTime = Date.now()
+    const [tokens, prices] = await Promise.all([
+      fetch(`${ASTRL_API}/tokens`).then(r => r.json()),
+      fetch(`${ASTRL_API}/prices`).then(r => r.json()),
+    ])
+    tokenCache = tokens
+      .filter(t => t.address && t.symbol && t.address !== XRD)
+      .map(t => {
+        const price = prices[t.address]
+        return {
+          address: t.address,
+          symbol: t.symbol,
+          name: t.name || t.symbol,
+          icon_url: t.iconUrl || null,
+          price_usd: price?.tokenPriceUSD || null,
+          price_xrd: price?.tokenPriceXRD || null,
+        }
+      })
+    tokenCacheTime = Date.now()
     return tokenCache
   } catch { return [] }
 }
 
-export async function getAstrlPrices() {
-  if (priceCache && Date.now() - cacheTime < CACHE_TTL) return priceCache
+export async function getAstrlQuote({ inputToken, outputToken, inputAmount, fromAddress }) {
   try {
-    if (!ASTRL_API_KEY) return {}
-    const res = await fetch(`${ASTRL_BASE}/partner/${ASTRL_API_KEY}/prices`)
-    if (!res.ok) return {}
-    priceCache = await res.json()
-    cacheTime = Date.now()
-    return priceCache
-  } catch { return {} }
-}
-
-export async function getSwapManifest({ inputToken, outputToken, inputAmount, fromAddress }) {
-  try {
-    if (!ASTRL_API_KEY) throw new Error('No Astrolescent API key. Set VITE_ASTRL_API_KEY in .env')
-    const res = await fetch(`${ASTRL_BASE}/partner/${ASTRL_API_KEY}/swap`, {
+    const body = {
+      inputToken,
+      outputToken,
+      inputAmount,
+      fromAddress,
+      ...(FEE_COMPONENT ? { feeComponent: FEE_COMPONENT, fee: FEE_PERCENT } : {}),
+    }
+    const res = await fetch(`${ASTRL_API}/swap`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ inputToken, outputToken, inputAmount, fromAddress }),
+      body: JSON.stringify(body),
     })
-    if (!res.ok) throw new Error('Swap API failed: ' + res.status)
-    return res.json()
-  } catch (e) {
-    throw e
-  }
-}
-
-export function hasApiKey() {
-  return !!ASTRL_API_KEY
+    return await res.json()
+  } catch { return null }
 }
