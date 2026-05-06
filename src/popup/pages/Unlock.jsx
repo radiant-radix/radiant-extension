@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import browser from 'webextension-polyfill'
-import Icon from '../../components/ui/Icon'
+import Icon from '@/components/ui/Icon'
 
 export default function Unlock({ onUnlock }) {
   const [password, setPassword] = useState('')

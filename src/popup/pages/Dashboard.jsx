@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import browser from 'webextension-polyfill'
-import { getEntityDetails } from '../../lib/gateway'
-import { getXRDPrice } from '../../lib/price'
-import { copyToClipboard } from '../../lib/clipboard'
-import Icon from '../../components/ui/Icon'
+import { getEntityDetails } from '@/lib/gateway'
+import { getXRDPrice } from '@/lib/price'
+import { copyToClipboard } from '@/lib/clipboard'
+import Icon from '@/components/ui/Icon'
 
 const XRD_MAINNET = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
 

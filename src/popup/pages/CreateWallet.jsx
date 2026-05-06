@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import browser from 'webextension-polyfill'
-import { generateMnemonic, mnemonicToKeypair, encryptWallet } from '../../lib/wallet'
+import { generateMnemonic, mnemonicToKeypair, encryptWallet } from '@/lib/wallet'
 
 export default function CreateWallet() {
   const navigate = useNavigate()

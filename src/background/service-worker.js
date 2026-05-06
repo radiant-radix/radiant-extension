@@ -57,7 +57,7 @@ async function unlock(password) {
     const { wallet } = await browser.storage.local.get('wallet')
     if (!wallet) return { error: 'No wallet found' }
 
-    const { decryptData } = await import('../lib/crypto.js')
+    const { decryptData } = await import('@/lib/crypto.js')
     const decrypted = decryptData(wallet, password)
     if (!decrypted) return { error: 'Wrong password' }
 
@@ -96,7 +96,7 @@ async function signTx({ manifest, network }) {
   if (!_pk) return { error: 'Wallet locked' }
 
   try {
-    const { signAndSubmitManifest } = await import('../lib/batch.js')
+    const { signAndSubmitManifest } = await import('@/lib/batch.js')
     const result = await signAndSubmitManifest(manifest, _pk, network || session.network)
     return { success: true, result }
   } catch (e) {

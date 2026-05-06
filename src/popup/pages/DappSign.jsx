@@ -1,7 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import browser from 'webextension-polyfill'
-import Icon from '../../components/ui/Icon'
+import Icon from '@/components/ui/Icon'
 
 export default function DappSign() {
   const [params] = useSearchParams()
