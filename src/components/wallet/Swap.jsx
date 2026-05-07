@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { loadWallet, decryptWallet } from '../../lib/wallet'
 import { signAndSubmitManifest } from '../../lib/batch'
 import { getTxStatus } from '../../lib/transaction'
-import { getOciTokens, findPool, calcOutputFromPool, buildSwapManifest } from '../../lib/ociswap'
+import { getAstrlTokens, getAstrlQuote } from '../../lib/astrolescent'
 import Icon from '../ui/Icon'
 
 const XRD_MAINNET = 'resource_rdx1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxradxrd'
@@ -90,7 +90,7 @@ export default function Swap({ wallet, network, onClose, onSuccess, balance }) {
   const [txResult, setTxResult] = useState(null)
 
   useEffect(() => {
-    getOciTokens(network).then(list => {
+    getAstrlTokens().then(list => {
       setTokens(list)
       setToToken(list.find(t => t.symbol === 'ASTRL') || list[0] || null)
       setLoadingTokens(false)
@@ -107,28 +107,20 @@ export default function Swap({ wallet, network, onClose, onSuccess, balance }) {
     }
     setQuoting(true); setError(''); setOutputAmount(''); setPriceImpact(null); setManifest(null)
 
-    const foundPool = await findPool(fromToken.address, toToken.address)
-    if (!foundPool) {
-      setError('No liquidity pool found for this pair.')
+    const result = await getAstrlQuote({
+      inputToken: fromToken.address,
+      outputToken: toToken.address,
+      inputAmount: parseFloat(inputAmount),
+      fromAddress: wallet.address,
+    })
+    if (!result || !result.manifest) {
+      setError('No route found for this pair.')
       setQuoting(false); return
     }
-    setPool(foundPool)
-
-    const quote = calcOutputFromPool(foundPool, fromToken.address, inputAmount)
-    if (!quote) {
-      setError('Cannot calculate quote for this pair.')
-      setQuoting(false); return
-    }
-
-    setOutputAmount(parseFloat(quote.output_amount).toFixed(6))
-    setPriceImpact(quote.price_impact)
-
-    const mfst = buildSwapManifest(foundPool, fromToken.address, toToken.address, inputAmount, wallet.address, slippage / 100)
-    if (mfst) {
-      setManifest(mfst)
-    } else {
-      setError('Could not build swap manifest.')
-    }
+    setPool({ blueprint_name: 'Astrolescent', name: 'Multi-DEX', fee_rate: 0.01 })
+    setOutputAmount(parseFloat(result.outputTokens).toFixed(6))
+    setPriceImpact(result.priceImpact)
+    setManifest(result.manifest)
     setQuoting(false)
   }
 
@@ -189,9 +181,9 @@ export default function Swap({ wallet, network, onClose, onSuccess, balance }) {
               <h3 className="text-xl font-bold text-[#E8F8F6]">Swap</h3>
               <div className="flex items-center gap-2">
                 {pool && <span className="text-[#3A7A72] text-xs font-mono">{pool.blueprint_name}</span>}
-                <a href={`https://ociswap.com`} target="_blank" rel="noopener noreferrer"
+                <a href="https://astrolescent.com" target="_blank" rel="noopener noreferrer"
                   className="text-[#3A7A72] text-xs font-mono hover:text-[#00D2B4] flex items-center gap-1">
-                  <Icon name="external" size={11} /> Ociswap
+                  <Icon name="external" size={11} /> Astrolescent
                 </a>
               </div>
             </div>
@@ -355,7 +347,7 @@ export default function Swap({ wallet, network, onClose, onSuccess, balance }) {
               </div>
               <div className="flex justify-between">
                 <span className="text-[#3A7A72] text-xs font-mono">DEX</span>
-                <span className="text-[#7ABFB8] text-xs font-mono">Ociswap {pool?.blueprint_name}</span>
+                <span className="text-[#7ABFB8] text-xs font-mono">Astrolescent</span>
               </div>
             </div>
 
