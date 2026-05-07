@@ -8,7 +8,7 @@ import Welcome from './pages/Welcome'
 import CreateWallet from './pages/CreateWallet'
 import ImportWallet from './pages/ImportWallet'
 import Dashboard from './pages/Dashboard'
-import LockScreen from '../../components/wallet/LockScreen'
+import LockScreen from '../components/wallet/LockScreen'
 import DappConnect from './pages/DappConnect'
 import DappSign from './pages/DappSign'
 
