@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { PRESALE_CONFIG, calcRdt, getOnChainStats } from '../../lib/presale'
-import { buildAndSignTransferTx, submitTx } from '../../lib/transaction'
-import { loadWallet, decryptWallet } from '../../lib/wallet'
-import Icon from '../../components/ui/Icon'
+import { PRESALE_CONFIG, calcRdt, getOnChainStats } from '../../../lib/presale'
+import { buildAndSignTransferTx, submitTx } from '../../../lib/transaction'
+import { loadWallet, decryptWallet } from '../../../lib/wallet'
+import Icon from '../../../components/ui/Icon'
 
 function ProgressBar({ pct }) {
   return (

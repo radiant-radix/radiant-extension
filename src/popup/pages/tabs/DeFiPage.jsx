@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { getGatewayUrl } from '../../lib/gateway'
-import { loadWallet, decryptWallet } from '../../lib/wallet'
-import { signAndSubmitManifest } from '../../lib/batch'
-import Icon from '../../components/ui/Icon'
+import { getGatewayUrl } from '../../../lib/gateway'
+import { loadWallet, decryptWallet } from '../../../lib/wallet'
+import { signAndSubmitManifest } from '../../../lib/batch'
+import Icon from '../../../components/ui/Icon'
 
 function getMetaValue(items, key) {
   const item = (items || []).find(i => i.key === key)

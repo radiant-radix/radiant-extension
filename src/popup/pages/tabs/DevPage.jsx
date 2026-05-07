@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { getGatewayUrl } from '../../lib/gateway'
-import { copyToClipboard } from '../../lib/clipboard'
-import { loadWallet, decryptWallet } from '../../lib/wallet'
-import { buildAndSignTransferTx, submitTx, getTxStatus } from '../../lib/transaction'
+import { getGatewayUrl } from '../../../lib/gateway'
+import { copyToClipboard } from '../../../lib/clipboard'
+import { loadWallet, decryptWallet } from '../../../lib/wallet'
+import { buildAndSignTransferTx, submitTx, getTxStatus } from '../../../lib/transaction'
 
 const SAMPLE_REQUESTS = [
   { label: 'Account Details', method: 'POST', endpoint: '/state/entity/details',

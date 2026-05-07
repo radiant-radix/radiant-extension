@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { loadWallet, decryptWallet, loadSession, saveSession } from '../../lib/wallet'
-import { getContacts, addContact, deleteContact, editContact } from '../../lib/addressBook'
-import { copyToClipboard } from '../../lib/clipboard'
+import { loadWallet, decryptWallet, loadSession, saveSession } from '../../../lib/wallet'
+import { getContacts, addContact, deleteContact, editContact } from '../../../lib/addressBook'
+import { copyToClipboard } from '../../../lib/clipboard'
 
 
 export default function SettingsPage({ wallet, network, onLogout, onNetworkChange, accounts, activeAccount, onRenameAccount }) {

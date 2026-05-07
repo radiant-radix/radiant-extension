@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { getConnectedDapps, removeConnectedDapp, addConnectedDapp, generateRadixWalletDeeplink } from '../../lib/dappConnect'
-import Icon from '../../components/ui/Icon'
+import { getConnectedDapps, removeConnectedDapp, addConnectedDapp, generateRadixWalletDeeplink } from '../../../lib/dappConnect'
+import Icon from '../../../components/ui/Icon'
 
 const POPULAR_DAPPS = [
   { name: 'Ociswap', origin: 'https://ociswap.com', icon: 'trending', desc: 'DEX & liquidity' },
