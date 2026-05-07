@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { validateMnemonic, mnemonicToKeypair, encryptWallet, saveWallet, saveSession, deriveAllPaths } from '../lib/wallet'
+import { validateMnemonic, mnemonicToKeypair, encryptWallet, saveWallet, saveSession, deriveAllPaths } from '../../lib/wallet'
 
 export default function ImportWallet() {
   const navigate = useNavigate()

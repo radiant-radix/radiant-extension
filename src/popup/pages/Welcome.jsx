@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import Icon from '../components/ui/Icon'
+import Icon from '../../components/ui/Icon'
 
 export default function Welcome() {
   const navigate = useNavigate()

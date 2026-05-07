@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { requestNotificationPermission, sendNotification } from '../lib/notifications'
-import { getResourceMetadata } from '../lib/metadata'
-import { getAstrlTokens } from '../lib/astrolescent'
-import Icon from '../components/ui/Icon'
+import { requestNotificationPermission, sendNotification } from '../../lib/notifications'
+import { getResourceMetadata } from '../../lib/metadata'
+import { getAstrlTokens } from '../../lib/astrolescent'
+import Icon from '../../components/ui/Icon'
 
 export default function Home({
   wallet, balance, txHistory, loadingBalance, loadingTx,

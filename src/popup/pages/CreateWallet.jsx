@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { generateMnemonic, mnemonicToKeypair, encryptWallet, saveWallet, saveSession } from '../lib/wallet'
+import { generateMnemonic, mnemonicToKeypair, encryptWallet, saveWallet, saveSession } from '../../lib/wallet'
 
 const STEPS = ['Generate', 'Backup', 'Verify', 'Password']
 
