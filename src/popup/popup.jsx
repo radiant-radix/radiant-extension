@@ -20,11 +20,15 @@ function App() {
   const [session, setSession] = useState(null)
 
   useEffect(() => {
-    if (!walletExists()) { setState('no-wallet'); return }
-    if (isLocked()) { setState('locked'); return }
-    const s = loadSession()
-    if (s) { setSession(s); setState('unlocked') }
-    else setState('locked')
+    async function checkState() {
+      const exists = await walletExists()
+      if (!exists) { setState('no-wallet'); return }
+      if (isLocked()) { setState('locked'); return }
+      const s = await loadSession()
+      if (s) { setSession(s); setState('unlocked') }
+      else setState('locked')
+    }
+    checkState()
   }, [])
 
   if (state === 'checking') return (

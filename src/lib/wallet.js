@@ -1,4 +1,5 @@
 import * as bip39 from 'bip39'
+import { extGet, extSet, extRemove } from './extensionStorage'
 import { HDKey } from '@scure/bip32'
 import HDKeySlip10 from 'micro-key-producer/slip10.js'
 import CryptoJS from 'crypto-js'
@@ -134,28 +135,29 @@ export function decryptWallet(cipher, password) {
 }
 
 export async function saveWallet(encryptedData) {
-  localStorage.setItem('radiant_wallet', encryptedData)
+  await extSet('radiant_wallet', encryptedData)
 }
 
-export function loadWallet() {
-  return localStorage.getItem('radiant_wallet')
+export async function loadWallet() {
+  return await extGet('radiant_wallet')
 }
 
-export function walletExists() {
-  return !!localStorage.getItem('radiant_wallet')
+export async function walletExists() {
+  try { return !!(await extGet('radiant_wallet')) } catch { return false }
 }
 
-export function deleteWallet() {
-  localStorage.removeItem('radiant_wallet')
+export async function deleteWallet() {
+  await extRemove('radiant_wallet')
   sessionStorage.removeItem('radiant_session')
 }
 
-export function saveSession(walletData) {
-  sessionStorage.setItem('radiant_session', JSON.stringify(walletData))
+export async function saveSession(walletData) {
+  await extSet('radiant_session', JSON.stringify(walletData))
 }
 
-export function loadSession() {
+export async function loadSession() {
   try {
-    return JSON.parse(sessionStorage.getItem('radiant_session'))
+    const data = await extGet('radiant_session')
+    return data ? JSON.parse(data) : null
   } catch { return null }
 }
