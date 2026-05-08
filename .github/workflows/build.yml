@@ -22,20 +22,19 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Verify dist HTML output
-        run: |
-          echo "--- HTML files in dist ---"
-          find dist -name "*.html"
-          echo "--- manifest.json popup path ---"
-          cat manifest.json | grep popup
+      - name: Show dist structure
+        run: find dist -type f | sort
 
       - name: Package extension
         run: |
-          mkdir -p extension-package
-          cp manifest.json extension-package/
-          cp -r dist extension-package/
-          cp -r icons extension-package/ 2>/dev/null || echo "No icons folder found, skipping"
-          cd extension-package && zip -r ../radiant-extension.zip .
+          mkdir -p package
+          cp manifest.json package/
+          cp -r dist package/
+          cp -r icons package/ 2>/dev/null || echo "No icons folder"
+          cp -r public/icons package/ 2>/dev/null || echo "No public/icons folder"
+          cd package && zip -r ../radiant-extension.zip .
+          echo "--- ZIP contents ---"
+          unzip -l ../radiant-extension.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
