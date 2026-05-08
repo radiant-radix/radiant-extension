@@ -128,7 +128,7 @@ export default function Swap({ wallet, network, onClose, onSuccess, balance }) {
     if (!password) { setError('Enter password'); return }
     setLoading(true); setStatusMsg('Decrypting...'); setError('')
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const decrypted = await decryptWallet(encrypted, password)
       if (!decrypted) { setError('Wrong password'); setLoading(false); return }
       setStatusMsg('Signing...')

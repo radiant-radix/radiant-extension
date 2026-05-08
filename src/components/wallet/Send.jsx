@@ -76,7 +76,7 @@ CALL_METHOD
     setLoading(true)
     setStatusMsg('Decrypting wallet...')
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const decrypted = await decryptWallet(encrypted, password)
       if (!decrypted) { setError('Wrong password'); setLoading(false); return }
       setStatusMsg('Building & signing transaction...')

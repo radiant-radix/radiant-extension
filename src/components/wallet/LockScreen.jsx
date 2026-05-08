@@ -41,7 +41,7 @@ export default function LockScreen({ onUnlock, onWalletDeleted }) {
     }
     setLoading(true)
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const decrypted = await decryptWallet(encrypted, password)
       if (!decrypted) {
         const att = recordFailedAttempt()

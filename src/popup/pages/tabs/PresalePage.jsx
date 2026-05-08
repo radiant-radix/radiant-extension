@@ -51,7 +51,7 @@ export default function PresalePage({ wallet, network, balance }) {
     try {
       setStatus('signing')
 
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       if (!encrypted) {
         setErrMsg('Wallet not found. Please re-import your wallet.')
         setStatus('confirm')

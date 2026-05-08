@@ -67,7 +67,7 @@ export default function BatchSend({ wallet, network, onClose, onSuccess }) {
     setLoading(true)
     setStatusMsg('Decrypting...')
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const decrypted = await decryptWallet(encrypted, password)
       if (!decrypted) { setError('Wrong password'); setLoading(false); return }
       setStatusMsg('Signing & submitting...')

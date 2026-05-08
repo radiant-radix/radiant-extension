@@ -109,7 +109,7 @@ export default function Dashboard() {
     setShowNetworkModal(false)
     if (!password) return
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       if (!encrypted) return
       const decrypted = await decryptWallet(encrypted, password)
       if (!decrypted) { alert('Wrong password'); return }
@@ -132,7 +132,7 @@ export default function Dashboard() {
   async function addAccount() {
     setAddingAccount(true)
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const password = prompt('Enter password to add account:')
       if (!password) { setAddingAccount(false); return }
       const decrypted = await decryptWallet(encrypted, password)

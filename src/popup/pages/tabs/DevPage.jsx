@@ -140,7 +140,7 @@ export default function DevPage({ wallet, network }) {
     setSignResult(null)
     setSignStatus('Decrypting...')
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const decrypted = decryptWallet(encrypted, signPassword)
       if (!decrypted) { setSignError('Wrong password'); setSigning(false); return }
 

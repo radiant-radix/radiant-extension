@@ -28,7 +28,7 @@ export default function SettingsPage({ wallet, network, onLogout, onNetworkChang
 
   async function revealPhrase() {
     setPhraseError('')
-    const encrypted = loadWallet()
+    const encrypted = await loadWallet()
     const decrypted = await decryptWallet(encrypted, password)
     if (!decrypted) { setPhraseError('Wrong password'); return }
     setPhrase(decrypted.mnemonic)
@@ -39,7 +39,7 @@ export default function SettingsPage({ wallet, network, onLogout, onNetworkChang
 
   async function revealPrivKey() {
     setPrivKeyError('')
-    const encrypted = loadWallet()
+    const encrypted = await loadWallet()
     const decrypted = await decryptWallet(encrypted, privKeyPassword)
     if (!decrypted) { setPrivKeyError('Wrong password'); return }
     // Get private key for active account

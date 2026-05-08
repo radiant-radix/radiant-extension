@@ -64,7 +64,7 @@ function DCASwapModal({ token, amount, wallet, network, XRD, onClose, onSuccess 
     if (!manifest) { setError('No pool found for this pair'); return }
     setStep(1); setStatusMsg('Decrypting...'); setError('')
     try {
-      const encrypted = loadWallet()
+      const encrypted = await loadWallet()
       const decrypted = await decryptWallet(encrypted, password)
       if (!decrypted) { setError('Wrong password'); setStep(0); return }
       setStatusMsg('Signing...')
