@@ -9,9 +9,13 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
     rollupOptions: {
-      input: resolve(__dirname, 'index.html'),
+      input: {
+        index: resolve(__dirname, 'index.html'),
+        'service-worker': resolve(__dirname, 'src/background/service-worker.js'),
+        inject: resolve(__dirname, 'src/content/inject.js'),
+      },
       output: {
-        entryFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: '[name].js',
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash][extname]',
       }
