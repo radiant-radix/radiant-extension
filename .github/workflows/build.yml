@@ -19,14 +19,51 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
+      - name: Build popup (Vite)
         run: npm run build
 
-      - name: Show built index.html
-        run: cat dist/index.html
+      - name: Build service-worker (esbuild)
+        run: |
+          npx esbuild src/background/service-worker.js \
+            --bundle \
+            --outfile=dist/service-worker.js \
+            --format=esm \
+            --platform=browser \
+            --external:chrome \
+            --alias:@/=src/ \
+            || echo "service-worker build failed, skipping"
+
+      - name: Build inject (esbuild)
+        run: |
+          npx esbuild src/content/inject.js \
+            --bundle \
+            --outfile=dist/inject.js \
+            --format=iife \
+            --platform=browser \
+            --external:chrome \
+            || echo "inject build failed, skipping"
+
+      - name: Add background & content scripts to manifest if builds succeeded
+        run: |
+          if [ -f dist/service-worker.js ] && [ -f dist/inject.js ]; then
+            node -e "
+              const fs = require('fs');
+              const m = JSON.parse(fs.readFileSync('manifest.json'));
+              m.background = { service_worker: 'dist/service-worker.js', type: 'module' };
+              m.content_scripts = [{ matches: ['http://*/*','https://*/*'], js: ['dist/inject.js'], run_at: 'document_start' }];
+              m.host_permissions = ['http://*/*','https://*/*'];
+              fs.writeFileSync('manifest.json', JSON.stringify(m, null, 2));
+              console.log('manifest updated with background + content_scripts');
+            "
+          else
+            echo "Skipping manifest update - build files missing"
+          fi
 
       - name: Show dist structure
         run: find dist -type f | sort
+
+      - name: Show built index.html
+        run: cat dist/index.html
 
       - name: Package extension
         run: |

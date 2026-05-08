@@ -11,11 +11,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(__dirname, 'index.html'),
-        'service-worker': resolve(__dirname, 'src/background/service-worker.js'),
-        inject: resolve(__dirname, 'src/content/inject.js'),
       },
       output: {
-        entryFileNames: '[name].js',
+        entryFileNames: 'assets/[name]-[hash].js',
         chunkFileNames: 'assets/[name]-[hash].js',
         assetFileNames: 'assets/[name]-[hash][extname]',
       }
