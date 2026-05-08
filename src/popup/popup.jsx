@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { walletExists, loadSession } from '../lib/wallet.js';
-
-// Import your page components (adjust names to match your actual files)
-import WelcomePage from './pages/WelcomePage.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import UnlockPage from './pages/UnlockPage.jsx';
+import Welcome from './pages/Welcome.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import Unlock from './pages/Unlock.jsx';
 
 export default function Popup() {
   // Possible states: loading | no-wallet | locked | unlocked
@@ -60,12 +58,12 @@ export default function Popup() {
   }
 
   if (appState === 'no-wallet') {
-    return <WelcomePage onWalletCreated={handleWalletCreated} />;
+    return <Welcome onWalletCreated={handleWalletCreated} />;
   }
 
   if (appState === 'locked') {
-    return <UnlockPage onUnlocked={handleUnlocked} />;
+    return <Unlock onUnlocked={handleUnlocked} />;
   }
 
-  return <DashboardPage onLock={handleLock} />;
+  return <Dashboard onLock={handleLock} />;
 }
