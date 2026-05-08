@@ -17,7 +17,7 @@ export default function ImportWallet() {
   const [selectedAddress, setSelectedAddress] = useState(null)
 
   async function handleFindAddresses() {
-    const cleaned = mnemonicInput.trim().toLowerCase().replace(/\s+/g, ' ')
+    const cleaned = mnemonicInput.trim().toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ')
     const wc = cleaned.split(' ').length
     if (wc !== 12 && wc !== 24) { setError('Seed phrase must be 12 or 24 words'); return }
     if (!validateMnemonic(cleaned)) { setError('Invalid seed phrase'); return }
@@ -32,7 +32,7 @@ export default function ImportWallet() {
 
   function handleValidate() {
     setError('')
-    const cleaned = mnemonicInput.trim().toLowerCase().replace(/\s+/g, ' ')
+    const cleaned = mnemonicInput.trim().toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ')
     const wordCount = cleaned.split(' ').length
     if (wordCount !== 12 && wordCount !== 24) {
       setError('Seed phrase must be 12 or 24 words')
@@ -51,7 +51,7 @@ export default function ImportWallet() {
     if (password !== confirmPassword) { setError('Passwords do not match'); return }
     setLoading(true)
     try {
-      const cleaned = mnemonicInput.trim().toLowerCase().replace(/\s+/g, ' ')
+      const cleaned = mnemonicInput.trim().toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ')
       let keypair
       if (selectedAddress) {
         keypair = selectedAddress
