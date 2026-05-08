@@ -18,7 +18,7 @@ export default function ConnectPage({ wallet, network }) {
   const [copied, setCopied] = useState('')
 
   async function copyAddress() {
-    const { copyToClipboard } = await import('../../lib/clipboard')
+    const { copyToClipboard } = await import('../../../lib/clipboard')
     await copyToClipboard(wallet.address)
     setCopied('address')
     setTimeout(() => setCopied(''), 2000)
