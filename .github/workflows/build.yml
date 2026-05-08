@@ -22,13 +22,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Show built index.html content
+      - name: Fix HTML path and copy to dist root
         run: |
-          echo "=== dist/src/popup/index.html ===" 
-          cat dist/src/popup/index.html
-
-      - name: Fix HTML to dist root
-        run: cp dist/src/popup/index.html dist/index.html
+          sed 's|../../assets/|./assets/|g' dist/src/popup/index.html > dist/index.html
+          echo "=== dist/index.html after fix ==="
+          cat dist/index.html
 
       - name: Show dist structure
         run: find dist -type f | sort
