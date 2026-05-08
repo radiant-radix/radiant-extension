@@ -1,76 +1,71 @@
-import { StrictMode, useState, useEffect } from 'react'
-import { createRoot } from 'react-dom/client'
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import browser from 'webextension-polyfill'
-import '../index.css'
+import { useState, useEffect } from 'react';
+import { walletExists, loadSession } from '../lib/wallet.js';
 
-import Welcome from './pages/Welcome'
-import CreateWallet from './pages/CreateWallet'
-import ImportWallet from './pages/ImportWallet'
-import Dashboard from './pages/Dashboard'
-import LockScreen from '../components/wallet/LockScreen'
-import DappConnect from './pages/DappConnect'
-import DappSign from './pages/DappSign'
+// Import your page components (adjust names to match your actual files)
+import WelcomePage from './pages/WelcomePage.jsx';
+import DashboardPage from './pages/DashboardPage.jsx';
+import UnlockPage from './pages/UnlockPage.jsx';
 
-import { walletExists, loadSession } from '../../lib/wallet'
-import { isLocked } from '../../lib/lock'
-
-function App() {
-  const [state, setState] = useState('checking')
-  const [session, setSession] = useState(null)
+export default function Popup() {
+  // Possible states: loading | no-wallet | locked | unlocked
+  const [appState, setAppState] = useState('loading');
 
   useEffect(() => {
-    async function checkState() {
-      const exists = await walletExists()
-      if (!exists) { setState('no-wallet'); return }
-      if (isLocked()) { setState('locked'); return }
-      const s = await loadSession()
-      if (s) { setSession(s); setState('unlocked') }
-      else setState('locked')
+    async function initApp() {
+      try {
+        const hasWallet = await walletExists();
+
+        if (!hasWallet) {
+          setAppState('no-wallet');
+          return;
+        }
+
+        const session = await loadSession();
+
+        if (session && session.unlocked) {
+          setAppState('unlocked');
+        } else {
+          setAppState('locked');
+        }
+      } catch (err) {
+        console.error('Failed to initialize app:', err);
+        setAppState('no-wallet');
+      }
     }
-    checkState()
-  }, [])
 
-  if (state === 'checking') return (
-    <div className="min-h-screen bg-[#040E0E] flex items-center justify-center">
-      <div className="w-8 h-8 rounded-full border-2 border-[#00D2B4] border-t-transparent animate-spin" />
-    </div>
-  )
+    initApp();
+  }, []);
 
-  return (
-    <HashRouter>
-      <Routes>
-        <Route path="/dapp-connect" element={<DappConnect />} />
-        <Route path="/dapp-sign" element={<DappSign />} />
-        {state === 'no-wallet' && (
-          <>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/create" element={<CreateWallet />} />
-            <Route path="/import" element={<ImportWallet />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-        {state === 'locked' && (
-          <>
-            <Route path="/" element={
-              <LockScreen
-                onUnlock={(s) => { setSession(s); setState('unlocked') }}
-                onWalletDeleted={() => setState('no-wallet')}
-              />
-            } />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-        {state === 'unlocked' && (
-          <>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </>
-        )}
-      </Routes>
-    </HashRouter>
-  )
+  // Called after wallet is successfully created or imported
+  function handleWalletCreated() {
+    setAppState('unlocked');
+  }
+
+  // Called after user successfully unlocks the wallet
+  function handleUnlocked() {
+    setAppState('unlocked');
+  }
+
+  // Called when user locks the wallet
+  function handleLock() {
+    setAppState('locked');
+  }
+
+  if (appState === 'loading') {
+    return (
+      <div className="flex items-center justify-center h-full min-h-[400px] bg-gray-900">
+        <div className="text-white text-sm animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
+  if (appState === 'no-wallet') {
+    return <WelcomePage onWalletCreated={handleWalletCreated} />;
+  }
+
+  if (appState === 'locked') {
+    return <UnlockPage onUnlocked={handleUnlocked} />;
+  }
+
+  return <DashboardPage onLock={handleLock} />;
 }
-
-createRoot(document.getElementById('root')).render(<StrictMode><App /></StrictMode>)

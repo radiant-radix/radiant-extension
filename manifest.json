@@ -2,61 +2,25 @@
   "manifest_version": 3,
   "name": "Radiant Wallet",
   "version": "1.0.0",
-  "description": "Non-custodial Radix DLT wallet. Swap, stake, and manage assets.",
+  "description": "Radix DLT Web Wallet Chrome Extension",
+  "action": {
+    "default_popup": "dist/index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
   "icons": {
     "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "action": {
-    "default_popup": "src/popup/index.html",
-    "default_title": "Radiant Wallet",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png"
-    }
-  },
-  "background": {
-    "service_worker": "background/service-worker.js",
-    "type": "module"
-  },
-  "content_scripts": [
-    {
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
-        "content/inject.js"
-      ],
-      "run_at": "document_start",
-      "world": "MAIN"
-    }
-  ],
-  "permissions": [
-    "storage",
-    "alarms",
-    "notifications"
-  ],
-  "host_permissions": [
-    "https://*.radixdlt.com/*",
-    "https://api.ociswap.com/*",
-    "https://api.astrolescent.com/*",
-    "https://mainnet.radixdlt.com/*",
-    "https://babylon-gateway.radixdlt.com/*"
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "icons/*",
-        "assets/*"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
-  ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'"
   }
 }

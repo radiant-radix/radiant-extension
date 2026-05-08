@@ -15,32 +15,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build extension
+      - name: Build
         run: npm run build
 
-      - name: Copy manifest and icons to dist
+      - name: Verify dist HTML output
         run: |
-          cp manifest.json dist/
-          mkdir -p dist/icons
-          cp -r public/icons/* dist/icons/
-          ls -la dist/
+          echo "--- HTML files in dist ---"
+          find dist -name "*.html"
+          echo "--- manifest.json popup path ---"
+          cat manifest.json | grep popup
 
-      - name: Create ZIP
+      - name: Package extension
         run: |
-          cd dist
-          zip -r ../radiant-wallet-extension.zip .
-          cd ..
-          echo "ZIP contents:"
-          unzip -l radiant-wallet-extension.zip | head -20
+          mkdir -p extension-package
+          cp manifest.json extension-package/
+          cp -r dist extension-package/
+          cp -r icons extension-package/ 2>/dev/null || echo "No icons folder found, skipping"
+          cd extension-package && zip -r ../radiant-extension.zip .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: radiant-wallet-extension
-          path: radiant-wallet-extension.zip
-          retention-days: 30
+          name: radiant-extension
+          path: radiant-extension.zip

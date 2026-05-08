@@ -1,27 +1,30 @@
-// Extension storage adapter - replaces localStorage for Chrome extension
-const isExtension = typeof chrome !== 'undefined' && chrome.storage
+// Adapter: chrome.storage.local (async) with localStorage-like API
+const extensionStorage = {
+  async getItem(key) {
+    return new Promise((resolve) => {
+      chrome.storage.local.get([key], (result) => {
+        resolve(result[key] ?? null);
+      });
+    });
+  },
 
-export async function extGet(key) {
-  if (!isExtension) return localStorage.getItem(key)
-  return new Promise(resolve => {
-    chrome.storage.local.get(key, result => resolve(result[key] || null))
-  })
-}
+  async setItem(key, value) {
+    return new Promise((resolve) => {
+      chrome.storage.local.set({ [key]: value }, resolve);
+    });
+  },
 
-export async function extSet(key, value) {
-  if (!isExtension) { localStorage.setItem(key, value); return }
-  return new Promise(resolve => {
-    chrome.storage.local.set({ [key]: value }, resolve)
-  })
-}
+  async removeItem(key) {
+    return new Promise((resolve) => {
+      chrome.storage.local.remove([key], resolve);
+    });
+  },
 
-export async function extRemove(key) {
-  if (!isExtension) { localStorage.removeItem(key); return }
-  return new Promise(resolve => {
-    chrome.storage.local.remove(key, resolve)
-  })
-}
+  async clear() {
+    return new Promise((resolve) => {
+      chrome.storage.local.clear(resolve);
+    });
+  }
+};
 
-export function extGetSync(key) {
-  return localStorage.getItem(key)
-}
+export default extensionStorage;
