@@ -22,6 +22,10 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Move HTML to dist root
+        run: |
+          cp dist/src/popup/index.html dist/index.html
+
       - name: Show dist structure
         run: find dist -type f | sort
 
@@ -31,7 +35,6 @@ jobs:
           cp manifest.json package/
           cp -r dist package/
           cp -r icons package/ 2>/dev/null || echo "No icons folder"
-          cp -r public/icons package/ 2>/dev/null || echo "No public/icons folder"
           cd package && zip -r ../radiant-extension.zip .
           echo "--- ZIP contents ---"
           unzip -l ../radiant-extension.zip
