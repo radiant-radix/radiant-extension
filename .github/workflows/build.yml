@@ -22,11 +22,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Fix HTML path and copy to dist root
-        run: |
-          sed 's|../../assets/|./assets/|g' dist/src/popup/index.html > dist/index.html
-          echo "=== dist/index.html after fix ==="
-          cat dist/index.html
+      - name: Show built index.html
+        run: cat dist/index.html
 
       - name: Show dist structure
         run: find dist -type f | sort
