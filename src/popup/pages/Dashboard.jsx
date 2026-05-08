@@ -48,13 +48,16 @@ export default function Dashboard() {
   const [networkPassword, setNetworkPassword] = useState('')
 
   useEffect(() => {
-    const session = loadSession()
-    if (!session) { navigate('/'); return }
-    setWallet(session)
-    setAccounts(session.accounts || [{ name: 'Account 1', address: session.address, publicKey: session.publicKey }])
+    async function init() {
+      const session = await loadSession()
+      if (!session) { navigate('/unlock'); return }
+      setWallet(session)
+      setAccounts(session.accounts || [{ name: 'Account 1', address: session.address, publicKey: session.publicKey }])
+    }
+    init()
   }, [])
 
-  const pathType = loadSession()?.pathType || 'radiant'
+  const pathType = 'radiant'
 
   useEffect(() => {
     function handleSelectTx(e) { setSelectedTx(e.detail) }
@@ -118,7 +121,7 @@ export default function Dashboard() {
       setAccounts(newAccounts)
       setActiveAccount(0)
       setNetwork(pendingNetwork)
-      const session = loadSession()
+      const session = await loadSession()
       const networkAddresses = session?.networkAddresses || {}
       networkAddresses[pendingNetwork] = newAccounts
       saveSession({ ...session, networkAddresses, network: pendingNetwork })
@@ -138,7 +141,7 @@ export default function Dashboard() {
       const newAcc = await deriveAccount(decrypted.mnemonic, newIndex, network, { pathType })
       const updatedAccounts = [...accounts, { name: `Account ${newIndex + 1}`, address: newAcc.address, publicKey: newAcc.publicKey }]
       setAccounts(updatedAccounts)
-      const session = loadSession()
+      const session = await loadSession()
       saveSession({ ...session, accounts: updatedAccounts })
       setActiveAccount(newIndex)
       setShowAccounts(false)
