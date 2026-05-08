@@ -28,3 +28,4 @@ const extensionStorage = {
 };
 
 export default extensionStorage;
+export { extensionStorage };

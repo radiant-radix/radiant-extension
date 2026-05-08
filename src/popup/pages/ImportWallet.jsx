@@ -68,8 +68,8 @@ export default function ImportWallet() {
       }
       const sensitiveData = { ...walletData, privateKey: keypair.privateKey, mnemonic: cleaned }
       const encrypted = await encryptWallet(sensitiveData, password)
-      saveWallet(encrypted)
-      saveSession(walletData)
+      await saveWallet(encrypted)
+      await saveSession({ ...walletData, unlocked: true })
       navigate('/dashboard')
     } catch (e) {
       setError('Failed to import wallet. Try again.')

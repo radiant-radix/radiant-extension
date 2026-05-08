@@ -1,11 +1,10 @@
 // Inject window.radiant provider into every page
 ;(function() {
-  if (window.radiant) return // already injected
+  if (window.radiant) return
 
   window.radiant = {
     isRadiant: true,
     version: '1.0.0',
-
     _callbacks: {},
     _requestId: 0,
 
@@ -49,7 +48,7 @@
     },
   }
 
-  // Listen for responses from extension
+  // Listen for responses from extension background
   window.addEventListener('message', (event) => {
     if (event.source !== window) return
     if (event.data?.source !== 'radiant-extension') return
@@ -61,22 +60,65 @@
     else cb.resolve(result)
   })
 
-  // Relay messages to background via chrome.runtime
+  // Relay messages from page to background service worker
   window.addEventListener('message', (event) => {
     if (event.source !== window) return
     if (event.data?.source !== 'radiant-dapp') return
     const { type, payload, requestId } = event.data
-    chrome.runtime.sendMessage({ type, payload }).then(response => {
+
+    chrome.runtime.sendMessage({ type, payload }).then(async response => {
+      // If pending, poll chrome.storage for result
+      if (response?.pending && response?.requestId) {
+        const approvalKey = `dapp_request_${response.requestId}`
+        let attempts = 0
+        const maxAttempts = 120 // Poll for up to 2 minutes
+
+        const poll = setInterval(() => {
+          attempts++
+          chrome.storage.local.get([approvalKey], (result) => {
+            const data = result[approvalKey]
+            if (data) {
+              clearInterval(poll)
+              // Clean up storage
+              chrome.storage.local.remove([approvalKey])
+              const parsed = JSON.parse(data)
+              window.postMessage({
+                source: 'radiant-extension',
+                requestId,
+                result: parsed.approved ? parsed : null,
+                error: parsed.approved ? null : 'User rejected request',
+              }, '*')
+            }
+            if (attempts >= maxAttempts) {
+              clearInterval(poll)
+              window.postMessage({
+                source: 'radiant-extension',
+                requestId,
+                result: null,
+                error: 'Request timed out',
+              }, '*')
+            }
+          })
+        }, 1000) // Poll every second
+      } else {
+        // Direct response
+        window.postMessage({
+          source: 'radiant-extension',
+          requestId,
+          result: response,
+          error: response?.error || null,
+        }, '*')
+      }
+    }).catch(err => {
       window.postMessage({
         source: 'radiant-extension',
         requestId,
-        result: response,
-        error: response?.error || null,
+        result: null,
+        error: err.message,
       }, '*')
     })
   })
 
-  // Notify dApps that Radiant is available
   window.dispatchEvent(new Event('radiant#initialized'))
-  console.log('Radiant Wallet injected')
+  console.log('Radiant Wallet provider injected')
 })()

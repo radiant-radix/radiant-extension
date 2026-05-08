@@ -1,18 +1,34 @@
 import { useState } from 'react'
-import browser from 'webextension-polyfill'
-import Icon from '@/components/ui/Icon'
+import { useNavigate } from 'react-router-dom'
+import { loadWallet, decryptWallet, saveSession } from '../../lib/wallet'
 
-export default function Unlock({ onUnlock }) {
+export default function Unlock() {
+  const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
   async function handleUnlock() {
     if (!password) return
-    setLoading(true); setError('')
-    const result = await browser.runtime.sendMessage({ type: 'UNLOCK', payload: { password } })
-    if (result?.error) { setError(result.error); setLoading(false); return }
-    onUnlock?.()
+    setLoading(true)
+    setError('')
+    try {
+      const encrypted = await loadWallet()
+      if (!encrypted) { setError('No wallet found'); setLoading(false); return }
+      const decrypted = await decryptWallet(encrypted, password)
+      if (!decrypted) { setError('Wrong password'); setLoading(false); return }
+      await saveSession({
+        address: decrypted.address,
+        publicKey: decrypted.publicKey,
+        accounts: decrypted.accounts || [{ name: 'Account 1', address: decrypted.address, publicKey: decrypted.publicKey }],
+        network: decrypted.network || 'mainnet',
+        pathType: decrypted.pathType || 'radiant',
+        unlocked: true,
+      })
+      navigate('/dashboard')
+    } catch (e) {
+      setError('Failed to unlock. Try again.')
+    }
     setLoading(false)
   }
 
