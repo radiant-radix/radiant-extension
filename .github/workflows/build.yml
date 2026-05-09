@@ -26,43 +26,36 @@ jobs:
         run: |
           npx esbuild src/content/inject.js \
             --bundle \
-            --outfile=dist/inject.js \
+            --outfile=inject.js \
             --format=iife \
             --platform=browser \
             --external:chrome
-          echo "=== inject.js first 5 lines ==="
-          head -5 dist/inject.js
+          echo "inject.js size: $(wc -c < inject.js) bytes"
 
-      - name: Copy inject.js to root level too
-        run: cp dist/inject.js inject.js
-
-      - name: Update manifest with content_scripts
+      - name: Build service worker (esbuild)
         run: |
-          node -e "
-            const fs = require('fs');
-            const m = JSON.parse(fs.readFileSync('manifest.json'));
-            m.content_scripts = [{
-              matches: ['http://*/*','https://*/*'],
-              js: ['inject.js'],
-              run_at: 'document_start',
-              all_frames: false
-            }];
-            m.host_permissions = ['http://*/*','https://*/*'];
-            fs.writeFileSync('manifest.json', JSON.stringify(m, null, 2));
-            console.log('manifest updated - inject.js at root level');
-          "
+          npx esbuild src/background/service-worker.js \
+            --bundle \
+            --outfile=service-worker.js \
+            --format=esm \
+            --platform=browser \
+            --external:chrome
+          echo "service-worker.js size: $(wc -c < service-worker.js) bytes"
 
-      - name: Show dist structure
-        run: find dist -type f | sort && ls -la inject.js
+      - name: Show all files
+        run: |
+          echo "=== root files ===" && ls -la *.js *.json
+          echo "=== dist files ===" && find dist -type f | sort
 
       - name: Package extension
         run: |
           mkdir -p package
           cp manifest.json package/
           cp inject.js package/
+          cp service-worker.js package/
           cp -r dist package/
           cd package && zip -r ../radiant-extension.zip .
-          unzip -l ../radiant-extension.zip
+          echo "=== ZIP contents ===" && unzip -l ../radiant-extension.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

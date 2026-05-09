@@ -11,16 +11,33 @@
       "128": "dist/icons/icon128.png"
     }
   },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
   "permissions": [
     "storage",
     "activeTab",
-    "alarms"
+    "alarms",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
   ],
   "icons": {
     "16": "dist/icons/icon16.png",
     "48": "dist/icons/icon48.png",
     "128": "dist/icons/icon128.png"
   },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["inject.js"],
+      "run_at": "document_start"
+    }
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   }
