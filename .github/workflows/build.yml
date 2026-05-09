@@ -30,7 +30,11 @@ jobs:
             --format=iife \
             --platform=browser \
             --external:chrome
-          echo "inject.js built successfully"
+          echo "=== inject.js first 5 lines ==="
+          head -5 dist/inject.js
+
+      - name: Copy inject.js to root level too
+        run: cp dist/inject.js inject.js
 
       - name: Update manifest with content_scripts
         run: |
@@ -39,26 +43,23 @@ jobs:
             const m = JSON.parse(fs.readFileSync('manifest.json'));
             m.content_scripts = [{
               matches: ['http://*/*','https://*/*'],
-              js: ['dist/inject.js'],
+              js: ['inject.js'],
               run_at: 'document_start',
               all_frames: false
             }];
             m.host_permissions = ['http://*/*','https://*/*'];
             fs.writeFileSync('manifest.json', JSON.stringify(m, null, 2));
-            console.log('manifest updated');
-            console.log(JSON.stringify(m, null, 2));
+            console.log('manifest updated - inject.js at root level');
           "
 
       - name: Show dist structure
-        run: find dist -type f | sort
-
-      - name: Show built index.html
-        run: cat dist/index.html
+        run: find dist -type f | sort && ls -la inject.js
 
       - name: Package extension
         run: |
           mkdir -p package
           cp manifest.json package/
+          cp inject.js package/
           cp -r dist package/
           cd package && zip -r ../radiant-extension.zip .
           unzip -l ../radiant-extension.zip
