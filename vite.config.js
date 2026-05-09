@@ -5,6 +5,10 @@ import { resolve } from 'path';
 export default defineConfig({
   plugins: [react()],
   base: './',
+  define: {
+    global: 'globalThis',
+    'process.env': {},
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
@@ -22,6 +26,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      buffer: 'buffer',
     }
+  },
+  optimizeDeps: {
+    include: ['buffer'],
   }
 });

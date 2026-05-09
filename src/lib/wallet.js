@@ -82,7 +82,7 @@ export async function deriveAllPaths(mnemonic, network = 'mainnet') {
         type: entry.type,
         curve: entry.curve,
         address,
-        privateKey: Buffer.from(child.privateKey).toString('hex')
+        privateKey: Array.from(child.privateKey).map(b => b.toString(16).padStart(2,'0')).join('')
       })
     } catch { continue }
   }
@@ -119,7 +119,7 @@ export async function mnemonicToKeypair(mnemonic, network = 'mainnet', pathType 
     privateKey.publicKey(), networkId
   )
   return {
-    privateKey: Buffer.from(child.privateKey).toString('hex'),
+    privateKey: Array.from(child.privateKey).map(b => b.toString(16).padStart(2,'0')).join(''),
     publicKey: privateKey.publicKeyHex(),
     address,
   }
