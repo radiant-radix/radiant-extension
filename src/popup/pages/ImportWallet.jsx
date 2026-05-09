@@ -72,7 +72,8 @@ export default function ImportWallet() {
       await saveSession({ ...walletData, unlocked: true })
       navigate('/dashboard')
     } catch (e) {
-      setError('Failed to import wallet. Try again.')
+      console.error('Import error:', e)
+      setError('Failed to import wallet: ' + e.message)
     }
     setLoading(false)
   }
